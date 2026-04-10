@@ -5,7 +5,6 @@ import { getUsers } from "./storage.js";
 import http from "http"; //importa o módulo nativo que cria servidores HTTP
 import crypto from "crypto";
 import fs from "fs";
-
  
 
  const server = http.createServer((req,res) => { /*cria o servidor e define uma função que recebe a requisição e envia a resposta    */
@@ -13,7 +12,6 @@ import fs from "fs";
     console.log("REQUISIÇÃO CHEGOU");
     console.log(req.url); //ex: "/login"
     console.log(req.method); //ex: POST OU GET
-
 
     if(req.url.startsWith("/api/login"  ) && req.method === "POST") {
 
@@ -71,7 +69,7 @@ import fs from "fs";
                     res.writeHead(200, {
 
                         "Content-type":"text/plain",
-                        "Set-Cookie": `session=${token}; HttpOnly; Path=/; Max-Age=3600`
+                        "Set-Cookie": `session=${token}; HttpOnly; Path=/; Max-Age=3600; SameSite=Strict`
 
                     });
 
@@ -84,7 +82,7 @@ import fs from "fs";
             }catch(error){
 
                 res.writeHead(400, {"Content-type":"text/plain"});
-                res.end(error.message);
+                res.end("JSON inválido");
                 
             };
         });
@@ -243,14 +241,9 @@ import fs from "fs";
     if (req.method === "GET") {
 
     const cleanUrl = req.url.split("?")[0];
-
-    const resolvedUrl = cleanUrl === "/" ? "/index.html" : cleanUrl;    //Se cleanUrl for = "/" / (padrão de todo navegador)
-
-    const path = process.cwd() + "/../frontend" + resolvedUrl;
-
-    console.log("cleanUrl:", cleanUrl);
-    console.log("resolvedUrl:", resolvedUrl);
-    console.log("filePath:", path);
+    const path = process.cwd() + "/../frontend" + cleanUrl;
+   
+    console.log(path);
 
     if (fs.existsSync(path)) {
 
@@ -259,29 +252,21 @@ import fs from "fs";
 
         let contentType = "text/plain";
 
-        if(resolvedUrl. endsWith(".html")) contentType = "text/html";
-        else if(resolvedUrl.endsWith(".js")) contentType = "application/javascript";
-        else if(resolvedUrl.endsWith(".css")) contentType = "text/css";
+        if(cleanUrl. endsWith(".html")) contentType = "text/html";
+        else if(cleanUrl.endsWith(".js")) contentType = "application/javascript";
+        else if(cleanUrl.endsWith(".css")) contentType = "text/css";
 
         console.log("SERVINDO ARQUIVO:", path);
         console.log("CONTENT TYPE:", contentType);
 
         res.writeHead(200, {"Content-type": contentType});
         res.end(file);
+
+        console.log("Path final" + path);
         return;
-
-    }else{
-
-        res.writeHead(400, {"Content-type":"text/plain"});
-        res.end("Página não encontrada");
-        return;
-
     }
 }
         
-
-    res.writeHead(404, { "Content-type": "text/plain" });
-    res.end("Rota não encontrada");
 
 });
 

